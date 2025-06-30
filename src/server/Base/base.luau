@@ -1,6 +1,7 @@
+TeamsConfig = require(game.ReplicatedStorage.Shared.TeamsConfig)
+
 local Base = {}
 
-local Players = game:GetService("Players")
 local Common = require(game.ReplicatedStorage.Shared.Common)
 local MoneyBlock: Part = game.ReplicatedStorage:WaitForChild("MoneyBlock")
 
@@ -51,7 +52,7 @@ Base.InitSellLogic = function(baseModel)
 		otherPart:Destroy()
 
 		local value: number = otherPart:GetAttribute("Value")
-		local player = Common.GetPlayerInTeam(team) :: Player
+		local player = TeamsConfig.GetPlayerInTeam(team) :: Player
 		local leaderstats = player and player:FindFirstChild("leaderstats")
 
 		local moneyStat = leaderstats and leaderstats:FindFirstChild("Money")
