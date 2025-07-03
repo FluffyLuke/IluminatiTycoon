@@ -1,4 +1,5 @@
 TeamsConfig = require(game.ReplicatedStorage.Shared.TeamsConfig)
+SpawnerManager = require(game.ServerScriptService.Server.Spawners.SpawnerManager)
 
 local Base = {}
 
@@ -18,25 +19,6 @@ Base.GetSpawner = function(baseModel, level: number): Model?
 		return nil
 	end
 	return spawner
-end
-
-Base.InitLevel0SpawnerLogic = function(baseModel: Model)
-	local spawner = Base.GetSpawner(baseModel, 0)
-	local button: ClickDetector = spawner.Button.ClickDetector
-
-	local pipeEnd: Part = spawner.End
-	local offset: Vector3 = pipeEnd:GetAttribute("Offset") :: Vector3
-
-	local value: number = spawner:GetAttribute("Value")
-
-	button.MouseClick:Connect(function()
-		local moneyBlockClone: Part = MoneyBlock:Clone()
-		moneyBlockClone.Parent = workspace
-		moneyBlockClone:SetAttribute("Value", value)
-		moneyBlockClone.Position = pipeEnd.Position + offset
-
-		print("Clicked! " .. (pipeEnd.Position + offset).X)
-	end)
 end
 
 Base.InitSellLogic = function(baseModel)
@@ -63,51 +45,21 @@ Base.InitSellLogic = function(baseModel)
 	end)
 end
 
-Base.SpawnSpawner = function(baseModel: Model, level: number)
-	local spawnerFolder = baseModel:FindFirstChild("Spawners")
-	if not spawnerFolder then
-		error("Spawners folder not found in baseModel.")
-		return
-	end
-
-	local spawner = spawnerFolder:FindFirstChild("Spawner" .. level)
-	if not spawner then
-		error("Spawner" .. level .. " not found in Spawners folder.")
-		return
-	end
-
-	local pipeEnd: Part = spawner.End
-	local offset: Vector3 = pipeEnd:GetAttribute("Offset") :: Vector3
-
-	if level < 0 then
-		print("NOT IMPLEMENTED")
-	end
-
-	Common.SetActive(spawner, true)
-end
-
-Base.DestroySpawners = function(baseModel: Model)
-	local spawnerFolder = baseModel:FindFirstChild("Spawners")
-	if not spawnerFolder then
-		error("Spawners folder not found in baseModel.")
-		return
-	end
-
-	Common.SetActive(spawnerFolder, false)
-end
-
 Base.SpawnBase = function(base: Model)
-	print("Spawning base for team: " .. base:GetAttribute("Team") :: string)
-	Base.SpawnSpawner(base, 0)
-	local initButton: BasePart = base:FindFirstChild("InitBaseButton") :: BasePart
-	Common.SetActive(initButton, false)
+	local team = base:GetAttribute("Team")
+
+	print("Spawning base for team: " .. team :: string)
+	SpawnerManager.SpawnSpawner(team, "Spawner0")
 end
 
 Base.DestroyBase = function(base: Model)
-	print("Destroying base for team: " .. base:GetAttribute("Team") :: string)
-	Base.DestroySpawners(base)
-	local initButton: BasePart = base:FindFirstChild("InitBaseButton") :: BasePart
-	Common.SetActive(initButton, true)
+	local team = base:GetAttribute("Team")
+	print("Destroying base for team: " .. team)
+
+	local spawnerFolder = base:FindFirstChild("Spawners")
+	for _, s in spawnerFolder:GetChildren() do
+		SpawnerManager.DespawnSpawner(team, s.Name)
+	end
 end
 
 return Base

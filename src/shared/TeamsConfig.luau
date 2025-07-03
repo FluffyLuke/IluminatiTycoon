@@ -1,5 +1,6 @@
 local Teams = game:GetService("Teams")
 local Players = game:GetService("Players")
+local CollectionService = game:GetService("CollectionService")
 
 local TeamsConfig = {
 	Drago = Teams:FindFirstChild("Drago's Guard"),
@@ -7,11 +8,16 @@ local TeamsConfig = {
 	Default = Teams:FindFirstChild("Peasants"),
 }
 
-function TeamsConfig.HasTeam(player: Player): boolean
-	return player.Team == TeamsConfig.Default
+export type TeamDef = "Drago" | "David"
+function TeamsConfig.IsTeamDef(team: string)
+	return team == "Drago" or team == "David"
 end
 
-function TeamsConfig.GetPlayerInTeam(team: string): Player?
+function TeamsConfig.HasTeam(player: Player): boolean
+	return player.Team ~= TeamsConfig.Default
+end
+
+function TeamsConfig.GetPlayerInTeam(team: TeamDef): Player?
 	for i: number, p: Player in Players:GetPlayers() do
 		if p.Team == TeamsConfig[team] then
 			return p
@@ -20,6 +26,38 @@ function TeamsConfig.GetPlayerInTeam(team: string): Player?
 
 	warn("Cannot find player")
 	return nil
+end
+
+function TeamsConfig.GetBase(team: TeamDef): Instance
+	return CollectionService:GetTagged("Base:" .. team)[1]
+end
+
+function TeamsConfig.TeamMoney(team: TeamDef): number
+	local player = TeamsConfig.GetPlayerInTeam(team)
+	if not player then
+		warn('No player in team "' .. team .. '"')
+		return 0
+	end
+
+	local moneyCounter = player.leaderstats.Money :: IntValue
+	return moneyCounter.Value
+end
+
+function TeamsConfig.SubstractMoney(team: TeamDef, valueToSubtract: number): boolean
+	local player = TeamsConfig.GetPlayerInTeam(team)
+	if not player then
+		warn('No player in team "' .. team .. '"')
+		return false
+	end
+
+	local moneyCounter = player.leaderstats.Money :: IntValue
+	if moneyCounter.Value - valueToSubtract < 0 then
+		return false
+	end
+
+	moneyCounter.Value -= valueToSubtract
+
+	return true
 end
 
 return TeamsConfig
