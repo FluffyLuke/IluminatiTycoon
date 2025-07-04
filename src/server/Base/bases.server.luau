@@ -8,7 +8,7 @@ local Base = require(game.ServerScriptService.Server.Base.Base)
 
 local Bases = {
 	game.Workspace:WaitForChild("BaseDrago") :: Model,
-	-- game.Workspace:WaitForChild("BaseDavid") :: Model,
+	game.Workspace:WaitForChild("BaseDavid") :: Model,
 }
 
 for i: number, b: Model in Bases do
@@ -23,5 +23,9 @@ for i: number, b: Model in Bases do
 
 	EventBus.On("SpawnBase:" .. team, function()
 		Base.SpawnBase(b)
+	end)
+
+	EventBus.On("DestroyBase:" .. team, function()
+		Base.DestroyBase(b)
 	end)
 end

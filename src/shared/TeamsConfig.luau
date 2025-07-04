@@ -32,6 +32,18 @@ function TeamsConfig.GetBase(team: TeamDef): Instance
 	return CollectionService:GetTagged("Base:" .. team)[1]
 end
 
+function TeamsConfig.GetTeam(instance: Instance): TeamDef?
+	local ancestor = instance:FindFirstAncestorWhichIsA("Model")
+	while ancestor do
+		if CollectionService:HasTag(ancestor, "Base") then
+			return ancestor:GetAttribute("Team")
+		end
+		ancestor = ancestor.Parent
+	end
+	warn('Cannot find team for "' .. instance.Name .. '"')
+	return nil
+end
+
 function TeamsConfig.TeamMoney(team: TeamDef): number
 	local player = TeamsConfig.GetPlayerInTeam(team)
 	if not player then

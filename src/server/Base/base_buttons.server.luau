@@ -75,5 +75,6 @@ for _, b in spawnerButtons do
 		end
 
 		Common.SetActive(b, false)
+		EventBus.Emit("Unlock", team, spawnerName)
 	end)
 end

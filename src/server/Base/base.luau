@@ -1,10 +1,9 @@
 TeamsConfig = require(game.ReplicatedStorage.Shared.TeamsConfig)
 SpawnerManager = require(game.ServerScriptService.Server.Spawners.SpawnerManager)
+local EventBus = require(game.ReplicatedStorage.Shared.EventBus)
+local Common = require(game.ReplicatedStorage.Shared.Common)
 
 local Base = {}
-
-local Common = require(game.ReplicatedStorage.Shared.Common)
-local MoneyBlock: Part = game.ReplicatedStorage:WaitForChild("MoneyBlock")
 
 Base.GetSpawner = function(baseModel, level: number): Model?
 	local spawnerFolder = baseModel:FindFirstChild("Spawners")
@@ -49,6 +48,7 @@ Base.SpawnBase = function(base: Model)
 	local team = base:GetAttribute("Team")
 
 	print("Spawning base for team: " .. team :: string)
+	EventBus.Emit("Unlock", team, "SpawnBase")
 	SpawnerManager.SpawnSpawner(team, "Spawner0")
 end
 
@@ -59,6 +59,11 @@ Base.DestroyBase = function(base: Model)
 	local spawnerFolder = base:FindFirstChild("Spawners")
 	for _, s in spawnerFolder:GetChildren() do
 		SpawnerManager.DespawnSpawner(team, s.Name)
+	end
+
+	local buttons = base:FindFirstChild("Buttons")
+	for _, b in buttons:GetChildren() do
+		Common.SetActive(b, false)
 	end
 end
 
