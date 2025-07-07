@@ -6,38 +6,38 @@ local SpawnerManager = require(game.ServerScriptService.Server.Spawners.SpawnerM
 local Common = require(game.ReplicatedStorage.Shared.Common)
 local TeamsConfig = require(game.ReplicatedStorage.Shared.TeamsConfig)
 
-local initButtons = CollectionService:GetTagged("InitBaseButton")
+-- local initButtons = CollectionService:GetTagged("InitBaseButton")
 
-for _, b in initButtons do
-	local team = b.Parent:GetAttribute("Team")
-	if not TeamsConfig.IsTeamDef(team) then
-		warn('"Team" attribute was set to wrong value: ' .. team)
-		continue
-	end
+-- for _, b in initButtons do
+-- 	local team = b.Parent:GetAttribute("Team")
+-- 	if not TeamsConfig.IsTeamDef(team) then
+-- 		warn('"Team" attribute was set to wrong value: ' .. team)
+-- 		continue
+-- 	end
 
-	b.Touched:Connect(function(otherPart: BasePart)
-		local teamName = TeamsConfig[team]
+-- 	b.Touched:Connect(function(otherPart: BasePart)
+-- 		local teamName = TeamsConfig[team]
 
-		local player = Players:GetPlayerFromCharacter(otherPart.Parent)
-		if not player then
-			return
-		end
+-- 		local player = Players:GetPlayerFromCharacter(otherPart.Parent)
+-- 		if not player then
+-- 			return
+-- 		end
 
-		if not TeamsConfig.HasTeam(player) then
-			print("Button touched by a peasant, assiging team and spawing base...")
-			Players:GetPlayerFromCharacter(otherPart.Parent).Team = teamName
-			EventBus.Emit("SpawnBase:" .. team)
-		end
-	end)
+-- 		if not TeamsConfig.HasTeam(player) then
+-- 			print("Button touched by a peasant, assiging team and spawing base...")
+-- 			Players:GetPlayerFromCharacter(otherPart.Parent).Team = teamName
+-- 			EventBus.Emit("SpawnBase:" .. team)
+-- 		end
+-- 	end)
 
-	EventBus.On("DestroyBase:" .. team, function()
-		Common.SetActive(b, true)
-	end)
+-- 	EventBus.On("DestroyBase:" .. team, function()
+-- 		Common.SetActive(b, true)
+-- 	end)
 
-	EventBus.On("SpawnBase:" .. team, function()
-		Common.SetActive(b, false)
-	end)
-end
+-- 	EventBus.On("SpawnBase:" .. team, function()
+-- 		Common.SetActive(b, false)
+-- 	end)
+-- end
 
 local spawnerButtons = CollectionService:GetTagged("SpawnerButton")
 

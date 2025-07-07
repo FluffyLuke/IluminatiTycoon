@@ -72,4 +72,14 @@ function TeamsConfig.SubstractMoney(team: TeamDef, valueToSubtract: number): boo
 	return true
 end
 
+function TeamsConfig.JoinTeam(player: Player, team: TeamDef): boolean
+	if TeamsConfig.HasTeam(player) then
+		return false
+	end
+
+	player.Team = TeamsConfig[team]
+
+	return true
+end
+
 return TeamsConfig
